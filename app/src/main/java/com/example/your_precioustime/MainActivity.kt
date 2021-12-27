@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     //commit
     //22
+    //요건 MYBUSAPP Commit이야
 
 
 
