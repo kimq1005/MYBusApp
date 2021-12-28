@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.your_precioustime.App
 import com.example.your_precioustime.Model.*
 import com.example.your_precioustime.R
 import com.example.your_precioustime.Retrofit.Coroutines_InterFace
@@ -54,6 +55,9 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
         Retrofit_Client.getFuckClient(Url.ODSAY_BASE_URL).create(Retrofit_InterFace::class.java)
     //코루틴 연습 가자잇
 
+    private val coroutinesInterface : Coroutines_InterFace=Retrofit_Client.getClient(Url.BUS_MAIN_URL)
+        .create(Coroutines_InterFace::class.java)
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -62,13 +66,12 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         busbinding = BusFragmentBinding.bind(view)
         job = Job()
 
         val suwoncitycode:String = "31010"
         val StationEditName = binding.SearchEditText.text.toString()
-        SetRecyclerView(suwoncitycode,null)
+//        SetRecyclerView(suwoncitycode,null)
 //            hellomy(suwoncitycode,"GGB203000129")
 
         ClickSearchBtn()
@@ -97,35 +100,63 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
 
 
 
-    fun SetRecyclerView(citycode:String,stationName:String?)=with(binding) {
+    private fun SetRecyclerView(citycode:String,stationName:String?) {
 
-        val stationcalls= retrofitInterface.StationNameGet(
-            cityCode = citycode,
-            staionName = stationName
-        )
+        launch(coroutineContext) {
+            try{
+                withContext(Dispatchers.Default){
+                    val call = coroutinesInterface.Coroutines_BUS_NAMEGET(citycode,stationName)
+                    val body = call.body()
+                    Log.d(TAG, "SetRecyclerView: $body")
+                    busStationSearchAdapter = Bus_Station_Search_Adapter()
 
-        stationcalls.enqueue(object :retrofit2.Callback<StationBus>{
+                    if(call.isSuccessful){
+                        body?.let{
+                            val hello = body.body.items.item
+                            binding.busRecyclerView.apply {
+                                adapter = busStationSearchAdapter
+                                layoutManager = LinearLayoutManager(context)
+                                busStationSearchAdapter.submitList(hello)
+                            }
 
-            override fun onResponse(call: Call<StationBus>, response: Response<StationBus>) {
-                val body = response.body()
-                busStationSearchAdapter = Bus_Station_Search_Adapter()
-
-                body?.let{it->
-                    val hello = body.body.items.item
-                    busRecyclerView.apply {
-                        adapter = busStationSearchAdapter
-                        layoutManager = LinearLayoutManager(context)
-                        busStationSearchAdapter.submitList(hello)
+                                //하 인생
+                        }
                     }
+
+
                 }
-           }
-            override fun onFailure(call: Call<StationBus>, t: Throwable) {
-                Log.d(TAG, "onFailure:$t")
-                noResultTextView.visibility = View.VISIBLE
-
+            }catch (e:Exception){
+                Log.d(TAG, "SetRecyclerView: 에러다에러히힛")
             }
+        }
 
-        })
+//        val stationcalls= retrofitInterface.StationNameGet(
+//            cityCode = citycode,
+//            staionName = stationName
+//        )
+
+//        stationcalls.enqueue(object :retrofit2.Callback<StationBus>{
+//
+//            override fun onResponse(call: Call<StationBus>, response: Response<StationBus>) {
+//                val body = response.body()
+//                busStationSearchAdapter = Bus_Station_Search_Adapter()
+//
+//                body?.let{it->
+//                    val hello = body.body.items.item
+//                    busRecyclerView.apply {
+//                        adapter = busStationSearchAdapter
+//                        layoutManager = LinearLayoutManager(context)
+//                        busStationSearchAdapter.submitList(hello)
+//                    }
+//                }
+//           }
+//            override fun onFailure(call: Call<StationBus>, t: Throwable) {
+//                Log.d(TAG, "onFailure:$t")
+//                noResultTextView.visibility = View.VISIBLE
+//
+//            }
+//
+//        })
 
 
 

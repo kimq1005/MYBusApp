@@ -39,13 +39,11 @@ class Bus_Station_Search_Adapter:RecyclerView.Adapter<Bus_Station_Search_Adapter
 
 
         holder.itemView.setOnClickListener{
-
             val intent = Intent(holder.itemView.context,DeepStationInfoActivity::class.java)
             intent.putExtra("stationName" , stationName)
             intent.putExtra("stationnodenode", stationnodenode)
             intent.putExtra("stationNodeNumber", stationNodeNumber)
             holder.itemView.context.startActivity(intent)
-
         }
     }
 
@@ -54,7 +52,7 @@ class Bus_Station_Search_Adapter:RecyclerView.Adapter<Bus_Station_Search_Adapter
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun submitList(list:List<StationItem>){
+    fun submitList(list:List<StationItem>?){
         stationItem= list
         notifyDataSetChanged()
     }

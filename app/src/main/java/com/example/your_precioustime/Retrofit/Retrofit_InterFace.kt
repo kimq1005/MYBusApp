@@ -10,6 +10,7 @@ import com.example.your_precioustime.Model.SubwayModel.SubwayModel
 import com.example.your_precioustime.Url
 import com.google.gson.JsonElement
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.*
 import retrofit2.http.Header
 
@@ -25,12 +26,11 @@ interface Retrofit_InterFace {
 
 
     @GET(Url.BUS_NAME_SEARCH)
-    fun StationNameGet(
+    suspend fun StationNameGet(
         @Query("cityCode") cityCode:String,
         @Query("nodeNm") staionName:String?,
 //        @Query("nodeNo") nodeNo: Int?
-    ) :Call<StationBus>
-
+    ) : Response<StationBus>
 
 
     @GET(Url.BUS_CITY_URL)

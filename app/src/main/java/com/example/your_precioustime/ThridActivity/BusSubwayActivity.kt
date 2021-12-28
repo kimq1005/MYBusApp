@@ -13,6 +13,7 @@ import com.example.your_precioustime.App
 import com.example.your_precioustime.Model.Item
 import com.example.your_precioustime.Retrofit.Coroutines_InterFace
 import com.example.your_precioustime.Retrofit.Retrofit_Client
+import com.example.your_precioustime.Retrofit.Retrofit_InterFace
 import com.example.your_precioustime.SecondActivity.Bus_Station_Search_Adapter
 import com.example.your_precioustime.SecondActivity.DB.BUSDNumberDataBase
 import com.example.your_precioustime.SecondActivity.DB.BUSDataBase
@@ -22,6 +23,7 @@ import com.example.your_precioustime.Url.Companion.BUS_MAIN_URL
 import com.example.your_precioustime.Util.Companion.TAG
 import com.example.your_precioustime.databinding.ActivityBusSubwayBinding
 import kotlinx.coroutines.*
+import retrofit2.create
 import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.log
@@ -42,6 +44,9 @@ class BusSubwayActivity : AppCompatActivity() ,CoroutineScope {
 
     private val coroutinesInterface : Coroutines_InterFace=Retrofit_Client.getClient(BUS_MAIN_URL)
         .create(Coroutines_InterFace::class.java)
+
+    private val retrofitInterFace:Retrofit_InterFace = Retrofit_Client.getClient(BUS_MAIN_URL)
+        .create(Retrofit_InterFace::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,25 +72,46 @@ class BusSubwayActivity : AppCompatActivity() ,CoroutineScope {
 
                     Log.d(TAG, "fuckinyeah: $body")
 
-                    body?.let{
-                        val hello = body.body.items.item
-                        busStationSearchAdapter = Bus_Station_Search_Adapter()
+                    if(call.isSuccessful){
+                        val hello = body?.body?.items?.item
+                        Log.d(TAG, "fuckinyeah: $hello")
+//                        busStationSearchAdapter = Bus_Station_Search_Adapter()
 
                         binding.fuckingshit.apply {
                             adapter = busStationSearchAdapter
-                            layoutManager = LinearLayoutManager(this@BusSubwayActivity)
+                            layoutManager = LinearLayoutManager(context)
                             busStationSearchAdapter.submitList(hello)
-
                         }
                     }
 
-
-
+//                    body?.let{
+//                        val hello = body.body.items.item
+//                        busStationSearchAdapter = Bus_Station_Search_Adapter()
+//
+////                        binding.fuckingshit.apply {
+////                            adapter = busStationSearchAdapter
+////                            layoutManager = LinearLayoutManager(this@BusSubwayActivity)
+////                            busStationSearchAdapter.submitList(hello)
+////
+////                        }
+//                    }
 
                 }
 
             }catch (e:Exception){
-                Log.d(TAG, "fuckinyeah:히힛 에러당 힣힛")
+                Toast.makeText(this@BusSubwayActivity,"에러다 이러ㅕㄴ아",Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    }
+
+    private fun testest(citycode: String, stationName: String){
+        launch(coroutineContext) {
+            try {
+                val call = retrofitInterFace.StationNameGet(citycode,stationName)
+                val body = call.body()
+            }catch (e:Exception){
+                Log.d(TAG, "testest:fdsfsfsfdsf")
             }
         }
 
