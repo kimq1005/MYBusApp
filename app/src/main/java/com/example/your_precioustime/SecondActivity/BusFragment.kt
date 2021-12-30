@@ -102,28 +102,24 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
 
     private fun SetRecyclerView(citycode:String,stationName:String?) {
 
-        launch(coroutineContext) {
+        launch(Dispatchers.Main) {
             try{
-                withContext(Dispatchers.Default){
-                    val call = coroutinesInterface.Coroutines_BUS_NAMEGET(citycode,stationName)
-                    val body = call.body()
-                    Log.d(TAG, "SetRecyclerView: $body")
-                    busStationSearchAdapter = Bus_Station_Search_Adapter()
+                val call = coroutinesInterface.Coroutines_BUS_NAMEGET(citycode,stationName)
+                val body = call.body()
+                Log.d(TAG, "SetRecyclerView: $body")
+                busStationSearchAdapter = Bus_Station_Search_Adapter()
 
-                    if(call.isSuccessful){
-                        body?.let{
-                            val hello = body.body.items.item
-                            binding.busRecyclerView.apply {
-                                adapter = busStationSearchAdapter
-                                layoutManager = LinearLayoutManager(context)
-                                busStationSearchAdapter.submitList(hello)
-                            }
-
-                                //하 인생
+                if(call.isSuccessful){
+                    body?.let{
+                        val hello = body.body.items.item
+                        binding.busRecyclerView.apply {
+                            adapter = busStationSearchAdapter
+                            layoutManager = LinearLayoutManager(context)
+                            busStationSearchAdapter.submitList(hello)
                         }
+
+                        //하 인생
                     }
-
-
                 }
             }catch (e:Exception){
                 Log.d(TAG, "SetRecyclerView: 에러다에러히힛")
