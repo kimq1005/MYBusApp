@@ -57,6 +57,7 @@ class UpAdpater:RecyclerView.Adapter<UpAdpater.MyViewHolder>() {
         }
 
         var checkstars:Boolean = true
+        //난 재능이 없어..
 
 
 
