@@ -48,13 +48,6 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
         get() = Dispatchers.Main + job
 
 
-    private var retrofitInterface: Retrofit_InterFace =
-        Retrofit_Client.getClient(Url.BUS_MAIN_URL).create(Retrofit_InterFace::class.java)
-
-    private var retrofitFuckInterFace:Retrofit_InterFace=
-        Retrofit_Client.getFuckClient(Url.ODSAY_BASE_URL).create(Retrofit_InterFace::class.java)
-    //코루틴 연습 가자잇
-
     private val coroutinesInterface : Coroutines_InterFace=Retrofit_Client.getClient(Url.BUS_MAIN_URL)
         .create(Coroutines_InterFace::class.java)
 
@@ -69,14 +62,8 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
         busbinding = BusFragmentBinding.bind(view)
         job = Job()
 
-        val suwoncitycode:String = "31010"
-        val StationEditName = binding.SearchEditText.text.toString()
-//        SetRecyclerView(suwoncitycode,null)
-//            hellomy(suwoncitycode,"GGB203000129")
 
         ClickSearchBtn()
-
-
 
     }
 
@@ -87,8 +74,6 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
             val suwoncitycode:String = "31010"
             val StationEditName = SearchEditText.text.toString()
             SetRecyclerView(suwoncitycode,StationEditName)
-//            hellomy(suwoncitycode,"GGB203000129")
-            //경
        }
 
         SearchEditText.setOnClickListener {
@@ -97,12 +82,9 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
 
     }
 
-
-
-
     private fun SetRecyclerView(citycode:String,stationName:String?) {
 
-        launch(Dispatchers.Main) {
+        launch(coroutineContext) {
             try{
                 val call = coroutinesInterface.Coroutines_BUS_NAMEGET(citycode,stationName)
                 val body = call.body()
@@ -122,6 +104,8 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
                     }
                 }
             }catch (e:Exception){
+                e.printStackTrace()
+                Toast.makeText(context,"연결 실패",Toast.LENGTH_SHORT).show()
                 Log.d(TAG, "SetRecyclerView: 에러다에러히힛")
             }
         }
