@@ -32,24 +32,24 @@ import kotlin.Exception
 import kotlin.coroutines.CoroutineContext
 
 
-class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
+class BusFragment : Fragment(R.layout.bus_fragment), CoroutineScope {
 
-    lateinit var upAdpater : UpAdpater
-    private var busbinding :BusFragmentBinding? =null
+    lateinit var upAdpater: UpAdpater
+    private var busbinding: BusFragmentBinding? = null
     private val binding get() = busbinding!!
     private var hicityCode: String? = null
     lateinit var busStationSearchAdapter: Bus_Station_Search_Adapter
 
 
+    lateinit var job: Job
 
-    lateinit var job:Job
-
-    override val coroutineContext : CoroutineContext
+    override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 
 
-    private val coroutinesInterface : Coroutines_InterFace=Retrofit_Client.getClient(Url.BUS_MAIN_URL)
-        .create(Coroutines_InterFace::class.java)
+    private val coroutinesInterface: Coroutines_InterFace =
+        Retrofit_Client.getClient(Url.BUS_MAIN_URL)
+            .create(Coroutines_InterFace::class.java)
 
 
     override fun onAttach(context: Context) {
@@ -68,13 +68,13 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
     }
 
 
-    private fun ClickSearchBtn() =with(binding) {
+    private fun ClickSearchBtn() = with(binding) {
 
         clickhere.setOnClickListener {
-            val suwoncitycode:String = "31010"
+            val suwoncitycode: String = "31010"
             val StationEditName = SearchEditText.text.toString()
-            SetRecyclerView(suwoncitycode,StationEditName)
-       }
+            SetRecyclerView(suwoncitycode, StationEditName)
+        }
 
         SearchEditText.setOnClickListener {
             noResultTextView.visibility = View.INVISIBLE
@@ -82,31 +82,37 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
 
     }
 
-    private fun SetRecyclerView(citycode:String,stationName:String?) {
+    private fun setAdapter(item: List<StationItem>) = with(binding) {
+
+        busStationSearchAdapter = Bus_Station_Search_Adapter()
+        binding.busRecyclerView.apply {
+            adapter = busStationSearchAdapter
+            layoutManager = LinearLayoutManager(context)
+            busStationSearchAdapter.submitList(item)
+        }
+
+    }
+
+    private fun SetRecyclerView(citycode: String, stationName: String?) {
 
         launch(coroutineContext) {
-            try{
-                val call = coroutinesInterface.Coroutines_BUS_NAMEGET(citycode,stationName)
+            try {
+                val call = coroutinesInterface.Coroutines_BUS_NAMEGET(citycode, stationName)
                 val body = call.body()
                 Log.d(TAG, "SetRecyclerView: $body")
-                busStationSearchAdapter = Bus_Station_Search_Adapter()
 
-                if(call.isSuccessful){
-                    body?.let{
+
+                if (call.isSuccessful) {
+                    body?.let {
                         val hello = body.body.items.item
-                        binding.busRecyclerView.apply {
-                            adapter = busStationSearchAdapter
-                            layoutManager = LinearLayoutManager(context)
-                            busStationSearchAdapter.submitList(hello)
-                        }
+                        setAdapter(hello)
 
                         //하 인생
                     }
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(context,"연결 실패",Toast.LENGTH_SHORT).show()
-                Log.d(TAG, "SetRecyclerView: 에러다에러히힛")
+                Toast.makeText(context, "연결 실패", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -139,10 +145,6 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
 //        })
 
 
-
-
-
-
 //        val buscall = retrofitInterface.BusGet(citycode,nodeId)
 //
 //        buscall.enqueue(object:retrofit2.Callback<Bus>{
@@ -171,20 +173,23 @@ class BusFragment:Fragment(R.layout.bus_fragment),CoroutineScope {
     }
 
 
-    private fun CoroutinesCall(citycode:String,stationName: String)=with(binding){
+    private fun CoroutinesCall(citycode: String, stationName: String) = with(binding) {
         launch(coroutineContext) {
-            try{
-                withContext(Dispatchers.IO){
-                    val response = Retrofit_Client.Retrofit_Object.Coroutines_BUS_NAMEGET(citycode,stationName)
+            try {
+                withContext(Dispatchers.IO) {
+                    val response = Retrofit_Client.Retrofit_Object.Coroutines_BUS_NAMEGET(
+                        citycode,
+                        stationName
+                    )
 
-                    if(response.isSuccessful){
+                    if (response.isSuccessful) {
                         val body = response.body()
-                        withContext(Dispatchers.Main){
+                        withContext(Dispatchers.Main) {
                             Log.d(TAG, "CoroutinesCall:${response.body()}")
                         }
                     }
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 Log.d(TAG, "CoroutinesCall:에러다에러다에러")
             }

@@ -56,20 +56,17 @@ class DeepStationInfoActivity : AppCompatActivity() , CoroutineScope {
         deepStationbinding = ActivityDeepStationInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         busFavoriteDB = BusFavroiteDataBase.getinstance(App.instance)!!
         job=Job()
-
         val stationName = intent.getStringExtra("stationName").toString()
-
-
         binding.BusStationName.text = stationName
         binding.backbtn.setOnClickListener {
             onBackPressed()
         }
-        busFavoriteGetAll()
 
         CoroutinesSetRecyclerView()
-
+        busFavoriteGetAll()
 //        SetBusStationRecyclerView()
         savemystation()
     }
