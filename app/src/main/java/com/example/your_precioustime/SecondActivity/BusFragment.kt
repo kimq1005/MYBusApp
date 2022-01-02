@@ -107,7 +107,7 @@ class BusFragment : Fragment(R.layout.bus_fragment), CoroutineScope {
                         val hello = body.body.items.item
                         setAdapter(hello)
 
-                        //하 인생
+                        //하 인생 어렵다
                     }
                 }
             } catch (e: Exception) {
